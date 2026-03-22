@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env
+    health:
+      show-details: always
+
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery.locator.enabled: true
+          routes:
+            - id: account_service_route
+              uri: lb://account-service
+              predicates:
+                - Path=/account/**

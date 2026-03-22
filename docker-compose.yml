@@ -1,0 +1,69 @@
+services:
+  consul:
+    image: hashicorp/consul:1.22.5
+    container_name: consul-mba
+    ports:
+      - "8500:8500"
+    command: "agent -dev -client=0.0.0.0"
+    networks:
+      - mba-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8500/v1/status/leader" ]
+      timeout: 2s
+      interval: 5s
+      retries: 5
+
+  consul-config-loader:
+    image: curlimages/curl:8.18.0
+    depends_on:
+      consul:
+        condition: service_healthy
+    volumes:
+      - ./infra/config-repo:/config
+      - ./infra/consul-loader/load-config.sh:/load-config.sh
+    entrypoint: [ "/bin/sh", "/load-config.sh" ]
+    networks:
+      - mba-net
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.4
+    container_name: keycloak-mba
+    ports:
+      - "9090:8080"
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_HEALTH_ENABLED: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    volumes:
+      - ./infra/keycloak-init:/opt/keycloak/data/import
+    networks:
+      - mba-net
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000; echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&3; grep 'HTTP/1.1 200 OK' <&3"]
+      timeout: 2s
+      interval: 10s
+      retries: 5
+
+  gateway-server:
+    build: infra/gateway-server
+    container_name: gateway-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      consul:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    networks:
+      - mba-net
+    environment:
+      - SPRING_APPLICATION_JSON={"spring.cloud.consul.host":"consul","spring.cloud.consul.port":8500}
+    healthcheck:
+      test: "curl --fail --silent gateway-server:8080/actuator/health | grep UP || exit 1"
+      timeout: 5s
+      interval: 10s
+      retries: 5
+
+networks:
+  mba-net:
