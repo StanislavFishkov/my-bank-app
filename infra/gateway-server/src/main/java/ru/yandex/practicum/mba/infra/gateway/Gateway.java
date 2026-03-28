@@ -1,4 +1,4 @@
-package ru.yandex.practicum.infra.gateway;
+package ru.yandex.practicum.mba.infra.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

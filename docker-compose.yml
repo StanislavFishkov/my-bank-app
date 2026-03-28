@@ -45,9 +45,28 @@ services:
       interval: 10s
       retries: 5
 
+  postgres:
+    image: postgres:18.3
+    container_name: postgres-mba
+    ports:
+      - "5432:5432"
+    networks:
+      - mba-net
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: accounts_db
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+    volumes:
+      - ./infra/database-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: pg_isready -q -d postgres -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 10s
+      retries: 15
+
   gateway-server:
     build: infra/gateway-server
-    container_name: gateway-server
+    container_name: mba-gateway-server
     ports:
       - "8080:8080"
     depends_on:
@@ -64,6 +83,30 @@ services:
       timeout: 5s
       interval: 10s
       retries: 5
+
+  accounts:
+    build: core/accounts
+    container_name: mba-accounts
+    depends_on:
+      consul:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - mba-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/accounts_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SERVER_PORT=8081
+    healthcheck:
+      test: "curl --fail --silent localhost:8081/actuator/health | grep UP || exit 1"
+      timeout: 5s
+      interval: 25s
+      retries: 10
 
 networks:
   mba-net:
