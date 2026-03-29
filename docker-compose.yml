@@ -15,6 +15,7 @@ services:
 
   consul-config-loader:
     image: curlimages/curl:8.18.0
+    container_name: consul-config-loader-mba
     depends_on:
       consul:
         condition: service_healthy
@@ -67,8 +68,6 @@ services:
   gateway-server:
     build: infra/gateway-server
     container_name: mba-gateway-server
-    ports:
-      - "8080:8080"
     depends_on:
       consul:
         condition: service_healthy
@@ -77,7 +76,13 @@ services:
     networks:
       - mba-net
     environment:
-      - SPRING_APPLICATION_JSON={"spring.cloud.consul.host":"consul","spring.cloud.consul.port":8500}
+      SPRING_APPLICATION_JSON: >
+        {
+          "server.port":8080,
+          "spring.cloud.consul.host":"consul",
+          "spring.cloud.consul.port":8500,
+          "security.oauth2.client.provider.keycloak.issuer-uri":"http://keycloak:8080/realms/mba" 
+        }
     healthcheck:
       test: "curl --fail --silent gateway-server:8080/actuator/health | grep UP || exit 1"
       timeout: 5s
@@ -97,13 +102,19 @@ services:
     networks:
       - mba-net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/accounts_db
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_CLOUD_CONSUL_HOST=consul
-      - SERVER_PORT=8081
+      SPRING_APPLICATION_JSON: >
+        {
+          "server.port":8080,
+          "spring.cloud.consul.host":"consul",
+          "spring.cloud.consul.port":8500,
+          "spring.security.oauth2.client.provider.keycloak.issuer-uri":"http://keycloak:8080/realms/mba",
+          "spring.security.oauth2.resourceserver.jwt.issuer-uri":"http://keycloak:8080/realms/mba",
+          "spring.datasource.url":"jdbc:postgresql://postgres:5432/accounts_db",
+          "spring.datasource.username":"root",
+          "spring.datasource.password":"root"
+        }
     healthcheck:
-      test: "curl --fail --silent localhost:8081/actuator/health | grep UP || exit 1"
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
       timeout: 5s
       interval: 25s
       retries: 10

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 management:
   endpoints:
@@ -13,13 +13,23 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:9090/realms/mma # для TokenRelay
   cloud:
     gateway:
       server:
         webflux:
-          discovery.locator.enabled: true
+          discovery:
+            locator:
+              enabled: true
+          default-filters:
+            - TokenRelay=
           routes:
-            - id: account_service_route
-              uri: lb://account-service
+            - id: accounts_service_route
+              uri: lb://accounts
               predicates:
                 - Path=/account/**

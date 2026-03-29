@@ -5,15 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.yandex.practicum</groupId>
-        <artifactId>my-bank-app</artifactId>
+        <artifactId>core</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>core</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>accounts</module>
-        <module>common</module>
-    </modules>
+    <artifactId>common</artifactId>
 
 </project>
