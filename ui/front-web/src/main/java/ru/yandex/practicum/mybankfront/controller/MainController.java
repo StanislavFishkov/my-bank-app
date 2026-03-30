@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.yandex.practicum.mybankfront.controller.dto.CashAction;
+import ru.yandex.practicum.mybankfront.dto.CashAction;
 import ru.yandex.practicum.mybankfront.controller.stub.AccountStub;
 
 import java.time.LocalDate;

@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env
+  endpoint:
+    health:
+      show-details: always
+
+spring:
+  application:
+    name: my-bank-front-app
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:9090/realms/mba
+        registration:
+          keycloak: # registrationId должен совпадать с провайдером, либо надо указать явно
+            client-id: mba-front-web # Идентификатор клиента в Keycloak
+            client-secret: tYp3usPVzyffp8W92Q9UamsyFURQ1jf4 # Секрет клиента в Keycloak
+            scope: openid, profile, email
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        security: debug

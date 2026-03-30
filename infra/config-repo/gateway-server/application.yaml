@@ -6,6 +6,7 @@ management:
     web:
       exposure:
         include: health,info,env
+  endpoint:
     health:
       show-details: always
 
