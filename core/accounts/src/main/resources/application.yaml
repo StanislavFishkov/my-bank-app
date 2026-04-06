@@ -10,8 +10,9 @@ spring:
       discovery:
         enabled: true
         prefer-ip-address: true
-        health-check-interval: 10s
         instance-id: "${spring.application.name}:${random.value}"
+        health-check-interval: 10s
+        health-check-critical-timeout: 30s
       config:
         enabled: true
         prefixes: config

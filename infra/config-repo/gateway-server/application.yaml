@@ -16,21 +16,19 @@ spring:
       enabled: ALWAYS
   security:
     oauth2:
-      client:
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:9090/realms/mma # для TokenRelay
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/mba
+
   cloud:
     gateway:
       server:
         webflux:
-          discovery:
-            locator:
-              enabled: true
           default-filters:
+            - StripPrefix=2
             - TokenRelay=
           routes:
             - id: accounts_service_route
               uri: lb://accounts
               predicates:
-                - Path=/account/**
+                - Path=/api/v1/account/**

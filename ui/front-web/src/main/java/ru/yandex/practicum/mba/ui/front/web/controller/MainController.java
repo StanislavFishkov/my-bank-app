@@ -1,13 +1,14 @@
-package ru.yandex.practicum.mybankfront.controller;
+package ru.yandex.practicum.mba.ui.front.web.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.yandex.practicum.mybankfront.dto.CashAction;
-import ru.yandex.practicum.mybankfront.controller.stub.AccountStub;
+import ru.yandex.practicum.mba.ui.front.web.dto.CashAction;
+import ru.yandex.practicum.mba.ui.front.web.controller.stub.AccountStub;
+import ru.yandex.practicum.mba.ui.front.web.service.InternalGatewayService;
 
 import java.time.LocalDate;
 
@@ -33,10 +34,11 @@ import java.time.LocalDate;
  * С примерами использования можно ознакомиться в тестовом классе заглушке AccountStub
  */
 @Controller
+@RequiredArgsConstructor
 public class MainController {
     // TODO: Удалить заглушку, так как используется только для ознакомительных целей
-    @Autowired
-    private AccountStub accountStub;
+    private final AccountStub accountStub;
+    private final InternalGatewayService internalGatewayService;
 
     /**
      * GET /.
@@ -58,6 +60,9 @@ public class MainController {
     public String getAccount(Model model) {
         // TODO: Заменить на то, что описано в комментарии к методу
         accountStub.fillModel(model, null, null);
+
+        String account = internalGatewayService.getAccount();
+        model.addAttribute("name", account);
 
         return "main";
     }

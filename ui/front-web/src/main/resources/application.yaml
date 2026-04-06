@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+mba:
+  apiUrl: "http://localhost:8081"
+  clientWiretapEnabled: true
+
 management:
   endpoints:
     web:
@@ -11,6 +15,8 @@ management:
       show-details: always
 
 spring:
+  main:
+    web-application-type: servlet
   application:
     name: my-bank-front-app
   security:

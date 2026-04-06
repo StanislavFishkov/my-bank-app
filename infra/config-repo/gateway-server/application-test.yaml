@@ -1,1 +1,7 @@
-debug: true
+debug: true  # включаем Spring Boot debug
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: WARN    # чтобы Netty не мусорил

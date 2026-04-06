@@ -30,9 +30,11 @@ services:
     image: quay.io/keycloak/keycloak:26.5.4
     container_name: keycloak-mba
     ports:
-      - "9090:8080"
+      - "9090:9090"
     command: ["start-dev", "--import-realm"]
     environment:
+      KC_HOSTNAME: keycloak
+      KC_HTTP_PORT: 9090
       KC_HEALTH_ENABLED: "true"
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
@@ -65,9 +67,35 @@ services:
       interval: 10s
       retries: 15
 
+  front-web:
+    build: ui/front-web
+    container_name: mba-front-web
+    ports:
+      - "8080:8080"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    networks:
+      - mba-net
+    environment:
+      SPRING_APPLICATION_JSON: >
+        {
+          "server.port":8080,
+          "mba.apiUrl":"http://gateway-server:8080",
+          "mba.clientWiretapEnabled":false,
+          "spring.security.oauth2.client.provider.keycloak.issuer-uri":"http://keycloak:9090/realms/mba"
+        }
+    healthcheck:
+      test: "curl --fail --silent front-web:8080/actuator/health | grep UP || exit 1"
+      timeout: 5s
+      interval: 10s
+      retries: 5
+
   gateway-server:
     build: infra/gateway-server
     container_name: mba-gateway-server
+    ports:
+      - "8081:8080"
     depends_on:
       consul:
         condition: service_healthy
@@ -81,7 +109,7 @@ services:
           "server.port":8080,
           "spring.cloud.consul.host":"consul",
           "spring.cloud.consul.port":8500,
-          "security.oauth2.client.provider.keycloak.issuer-uri":"http://keycloak:8080/realms/mba" 
+          "spring.security.oauth2.resourceserver.jwt.issuer-uri":"http://keycloak:9090/realms/mba"
         }
     healthcheck:
       test: "curl --fail --silent gateway-server:8080/actuator/health | grep UP || exit 1"
@@ -107,8 +135,8 @@ services:
           "server.port":8080,
           "spring.cloud.consul.host":"consul",
           "spring.cloud.consul.port":8500,
-          "spring.security.oauth2.client.provider.keycloak.issuer-uri":"http://keycloak:8080/realms/mba",
-          "spring.security.oauth2.resourceserver.jwt.issuer-uri":"http://keycloak:8080/realms/mba",
+          "spring.security.oauth2.client.provider.keycloak.issuer-uri":"http://keycloak:9090/realms/mba",
+          "spring.security.oauth2.resourceserver.jwt.issuer-uri":"http://keycloak:9090/realms/mba",
           "spring.datasource.url":"jdbc:postgresql://postgres:5432/accounts_db",
           "spring.datasource.username":"root",
           "spring.datasource.password":"root"

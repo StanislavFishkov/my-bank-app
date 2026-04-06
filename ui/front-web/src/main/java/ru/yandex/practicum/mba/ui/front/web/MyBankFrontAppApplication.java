@@ -1,4 +1,4 @@
-package ru.yandex.practicum.mybankfront;
+package ru.yandex.practicum.mba.ui.front.web;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

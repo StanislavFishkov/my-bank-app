@@ -1,11 +1,11 @@
-package ru.yandex.practicum.mybankfront.controller.stub;
+package ru.yandex.practicum.mba.ui.front.web.controller.stub;
 
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.yandex.practicum.mybankfront.dto.AccountDto;
-import ru.yandex.practicum.mybankfront.dto.CashAction;
+import ru.yandex.practicum.mba.ui.front.web.dto.AccountDto;
+import ru.yandex.practicum.mba.ui.front.web.dto.CashAction;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
