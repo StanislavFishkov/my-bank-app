@@ -9,9 +9,11 @@ spring:
       port: 8500               # Порт Consul (8500 по умолчанию)
       discovery:
         enabled: true
-        prefer-ip-address: true
-        health-check-interval: 10s
+        hostname: host.docker.internal
+        prefer-ip-address: false
         instance-id: "${spring.application.name}:${random.value}"
+        health-check-interval: 5s
+        health-check-critical-timeout: 15s
       config:
         enabled: true            # Включаем Consul Config для внешней конфигурации
         prefixes: config

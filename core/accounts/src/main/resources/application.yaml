@@ -9,10 +9,11 @@ spring:
       port: 8500
       discovery:
         enabled: true
-        prefer-ip-address: true
+        hostname: host.docker.internal
+        prefer-ip-address: false
         instance-id: "${spring.application.name}:${random.value}"
-        health-check-interval: 10s
-        health-check-critical-timeout: 30s
+        health-check-interval: 5s
+        health-check-critical-timeout: 15s
       config:
         enabled: true
         prefixes: config

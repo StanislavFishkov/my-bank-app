@@ -18,12 +18,23 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9090/realms/mba
-
+          issuer-uri: http://keycloak:9090/realms/mba
   cloud:
+    loadbalancer:
+      cache:
+        enabled: true
+        ttl: 2s
+      health-check:
+        interval: 5s
     gateway:
       server:
         webflux:
+          httpclient:
+            connect-timeout: 2000
+            response-timeout: 5s
+            pool:
+              max-idle-time: 15s
+              max-life-time: 60s
           default-filters:
             - StripPrefix=2
             - TokenRelay=

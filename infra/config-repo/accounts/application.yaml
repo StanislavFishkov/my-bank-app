@@ -33,11 +33,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9090/realms/mba
+          issuer-uri: http://keycloak:9090/realms/mba
       client:
         provider:
           keycloak:
-            issuer-uri: http://localhost:9090/realms/mba # Адрес сервера авторизации для получения токена
+            issuer-uri: http://keycloak:9090/realms/mba # Адрес сервера авторизации для получения токена
         registration:
           mba-accounts: # Описание клиента OAuth2
             provider: keycloak
