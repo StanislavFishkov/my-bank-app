@@ -1,24 +1,19 @@
 package ru.yandex.practicum.mba.ui.front.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountDto {
-    private String login;
+public class UpdateRequestAccountDto {
     private String name;
-    private Integer balance;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthdate;
-
-    @Builder.Default
-    private List<AccountShortDto> accounts =  new ArrayList<>();
 }

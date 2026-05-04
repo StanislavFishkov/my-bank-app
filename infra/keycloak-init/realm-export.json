@@ -59,9 +59,9 @@
         "attributes": {}
       },
       {
-        "id": "7035dc48-f49c-4dc3-9bff-3a138093dcc0",
-        "name": "mba_user",
-        "description": "",
+        "id": "9c125de6-c93c-40a5-a710-737f3bb553e9",
+        "name": "admin",
+        "description": "MBA application Admin",
         "composite": false,
         "clientRole": false,
         "containerId": "910f84f2-1db1-435b-b289-1d9af0c85181",
@@ -77,9 +77,9 @@
         "attributes": {}
       },
       {
-        "id": "0ff13a93-0f96-4dbc-b34d-7328b9367dd2",
-        "name": "payment-balance-read",
-        "description": "",
+        "id": "6783627c-9902-4043-9542-0f7035ba48c9",
+        "name": "user",
+        "description": "MBA application User",
         "composite": false,
         "clientRole": false,
         "containerId": "910f84f2-1db1-435b-b289-1d9af0c85181",
@@ -87,31 +87,26 @@
       },
       {
         "id": "37cf6080-c4a1-4b46-b5ad-c695361cee8b",
-        "name": "default-roles-mma",
+        "name": "default-roles-mba",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
           "realm": [
-            "mba_user",
             "offline_access",
-            "uma_authorization"
+            "uma_authorization",
+            "user"
           ],
           "client": {
             "account": [
               "manage-account",
               "view-profile"
+            ],
+            "mba-accounts": [
+              "accounts.write",
+              "accounts.read"
             ]
           }
         },
-        "clientRole": false,
-        "containerId": "910f84f2-1db1-435b-b289-1d9af0c85181",
-        "attributes": {}
-      },
-      {
-        "id": "f36f81b6-6ab3-4416-a5bd-cc25e87b2cfc",
-        "name": "payment-balance-write",
-        "description": "",
-        "composite": false,
         "clientRole": false,
         "containerId": "910f84f2-1db1-435b-b289-1d9af0c85181",
         "attributes": {}
@@ -433,13 +428,33 @@
           "containerId": "f14d7a1d-7d05-4f7d-8943-d9b0dae7ed07",
           "attributes": {}
         }
+      ],
+      "mba-accounts": [
+        {
+          "id": "24a22b90-236c-40f8-b594-1b688bf868a3",
+          "name": "accounts.write",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "ed4ff5cd-e597-4d31-b26a-55b8a966e288",
+          "attributes": {}
+        },
+        {
+          "id": "404107e4-bd1d-487c-b5b6-da82dfb47a5c",
+          "name": "accounts.read",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "ed4ff5cd-e597-4d31-b26a-55b8a966e288",
+          "attributes": {}
+        }
       ]
     }
   },
   "groups": [],
   "defaultRole": {
     "id": "37cf6080-c4a1-4b46-b5ad-c695361cee8b",
-    "name": "default-roles-mma",
+    "name": "default-roles-mba",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
@@ -491,6 +506,22 @@
   "webAuthnPolicyPasswordlessExtraOrigins": [],
   "users": [
     {
+      "id": "431636c5-f2c6-4832-b784-076908658488",
+      "username": "service-account-mba-accounts",
+      "emailVerified": false,
+      "enabled": true,
+      "createdTimestamp": 1777727186560,
+      "totp": false,
+      "serviceAccountClientId": "mba-accounts",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-mba"
+      ],
+      "notBefore": 0,
+      "groups": []
+    },
+    {
       "id": "afda5e6b-4cf7-4652-9230-96ae9c65cc47",
       "username": "service-account-my-market-app",
       "emailVerified": false,
@@ -501,9 +532,7 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "payment-balance-read",
-        "default-roles-mma",
-        "payment-balance-write"
+        "default-roles-mba"
       ],
       "notBefore": 0,
       "groups": []
@@ -707,6 +736,65 @@
       "nodeReRegistrationTimeout": 0,
       "defaultClientScopes": [
         "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "organization",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "ed4ff5cd-e597-4d31-b26a-55b8a966e288",
+      "clientId": "mba-accounts",
+      "name": "mba-accounts",
+      "description": "My bank application: accounts service",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "SKiR96V4VHEE1KgtCRV8DTVWBfi8ZRzV",
+      "redirectUris": [
+        "/*"
+      ],
+      "webOrigins": [
+        "/*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1777727186",
+        "backchannel.logout.session.required": "true",
+        "standard.token.exchange.enabled": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "dpop.bound.access.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "service_account",
         "acr",
         "roles",
         "profile",
@@ -1717,14 +1805,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-usermodel-attribute-mapper",
             "oidc-address-mapper",
             "saml-role-list-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
-            "saml-user-attribute-mapper",
-            "oidc-full-name-mapper",
             "oidc-usermodel-property-mapper",
-            "saml-user-property-mapper"
+            "oidc-sha256-pairwise-sub-mapper",
+            "oidc-full-name-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "saml-user-property-mapper",
+            "saml-user-attribute-mapper"
           ]
         }
       },
@@ -1776,13 +1864,13 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-user-attribute-mapper",
-            "oidc-usermodel-attribute-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
             "oidc-address-mapper",
-            "oidc-usermodel-property-mapper",
             "oidc-full-name-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "oidc-usermodel-property-mapper",
+            "oidc-sha256-pairwise-sub-mapper",
             "saml-user-property-mapper",
+            "saml-user-attribute-mapper",
             "saml-role-list-mapper"
           ]
         }

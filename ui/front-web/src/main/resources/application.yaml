@@ -24,7 +24,7 @@ spring:
       client:
         provider:
           keycloak:
-            issuer-uri: http://localhost:9090/realms/mba
+            issuer-uri: http://keycloak:9090/realms/mba
         registration:
           keycloak: # registrationId должен совпадать с провайдером, либо надо указать явно
             client-id: mba-front-web # Идентификатор клиента в Keycloak
@@ -36,6 +36,9 @@ spring:
 logging:
   level:
     root: info
-    org:
-      springframework:
-        security: debug
+    reactor.netty.http.client: DEBUG
+    reactor.netty.transport: DEBUG
+    reactor.netty: DEBUG
+#    org:
+#      springframework:
+#        security: debug

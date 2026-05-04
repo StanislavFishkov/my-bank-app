@@ -1,16 +1,19 @@
 package ru.yandex.practicum.mba.ui.front.web.controller;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.yandex.practicum.mba.ui.front.web.dto.AccountDto;
 import ru.yandex.practicum.mba.ui.front.web.dto.CashAction;
 import ru.yandex.practicum.mba.ui.front.web.controller.stub.AccountStub;
 import ru.yandex.practicum.mba.ui.front.web.service.InternalGatewayService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Контроллер main.html.
@@ -58,11 +61,8 @@ public class MainController {
      */
     @GetMapping("/account")
     public String getAccount(Model model) {
-        // TODO: Заменить на то, что описано в комментарии к методу
-        accountStub.fillModel(model, null, null);
-
-        String account = internalGatewayService.getAccount();
-        model.addAttribute("name", account);
+        AccountDto account = internalGatewayService.getAccount();
+        fillModel(account, model,  null, null);
 
         return "main";
     }
@@ -84,9 +84,8 @@ public class MainController {
             @RequestParam("name") String name,
             @RequestParam("birthdate") LocalDate birthdate
     ) {
-        // TODO: Заменить на то, что описано в комментарии к методу
-        accountStub.setNameAndBirthdate(name, birthdate);
-        accountStub.fillModel(model, null, null);
+        AccountDto account = internalGatewayService.setNameAndBirthdate(name, birthdate);
+        fillModel(account, model,  null, null);
 
         return "main";
     }
@@ -135,5 +134,14 @@ public class MainController {
         accountStub.transfer(model, value, login);
 
         return "main";
+    }
+
+    private void fillModel(AccountDto accountDto, Model model, @Nullable List<String> errors, @Nullable String info) {
+        model.addAttribute("name", accountDto.getName());
+        model.addAttribute("birthdate", accountDto.getBirthdate());
+        model.addAttribute("sum", accountDto.getBalance());
+        model.addAttribute("accounts", accountDto.getAccounts());
+        model.addAttribute("errors", errors);
+        model.addAttribute("info", info);
     }
 }
