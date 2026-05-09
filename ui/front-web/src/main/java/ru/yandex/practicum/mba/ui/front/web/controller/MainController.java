@@ -1,19 +1,21 @@
 package ru.yandex.practicum.mba.ui.front.web.controller;
 
 import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ru.yandex.practicum.mba.ui.front.web.controller.form.AccountForm;
+import ru.yandex.practicum.mba.ui.front.web.controller.form.CashOperationForm;
+import ru.yandex.practicum.mba.ui.front.web.controller.form.TransferOperationForm;
 import ru.yandex.practicum.mba.ui.front.web.dto.AccountDto;
 import ru.yandex.practicum.mba.ui.front.web.dto.CashAction;
-import ru.yandex.practicum.mba.ui.front.web.controller.stub.AccountStub;
 import ru.yandex.practicum.mba.ui.front.web.service.InternalGatewayService;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Контроллер main.html.
@@ -39,8 +41,6 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class MainController {
-    // TODO: Удалить заглушку, так как используется только для ознакомительных целей
-    private final AccountStub accountStub;
     private final InternalGatewayService internalGatewayService;
 
     /**
@@ -62,7 +62,12 @@ public class MainController {
     @GetMapping("/account")
     public String getAccount(Model model) {
         AccountDto account = internalGatewayService.getAccount();
-        fillModel(account, model,  null, null);
+        AccountForm accountForm = new AccountForm(account.getName(), account.getBirthdate());
+
+        model.addAttribute("accountForm", accountForm);
+
+        fillPageData(model, account);
+        initForms(model);
 
         return "main";
     }
@@ -79,15 +84,20 @@ public class MainController {
      * 2. birthdate - дата рождения в формате YYYY-DD-MM
      */
     @PostMapping("/account")
-    public String editAccount(
-            Model model,
-            @RequestParam("name") String name,
-            @RequestParam("birthdate") LocalDate birthdate
-    ) {
-        AccountDto account = internalGatewayService.setNameAndBirthdate(name, birthdate);
-        fillModel(account, model,  null, null);
+    public String editAccount(Model model,
+                              @Valid @ModelAttribute AccountForm accountForm,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            fillPageData(model, null);
+            initForms(model);
+            return "main";
+        }
 
-        return "main";
+        internalGatewayService.setNameAndBirthdate(accountForm.getName(), accountForm.getBirthdate());
+        redirectAttributes.addFlashAttribute("info", "Данные пользователя успешно изменены");
+
+        return "redirect:/account";
     }
 
     /**
@@ -102,15 +112,24 @@ public class MainController {
      * 2. action - GET (снять), PUT (пополнить)
      */
     @PostMapping("/cash")
-    public String editCash(
-            Model model,
-            @RequestParam("value") int value,
-            @RequestParam("action") CashAction action
-            ) {
-        // TODO: Заменить на то, что описано в комментарии к методу
-        accountStub.editCash(model, value, action);
+    public String editCash(Model model,
+                           @Valid @ModelAttribute CashOperationForm cashOperationForm,
+                           BindingResult bindingResult,
+                           RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            fillPageData(model, null);
+            initForms(model);
+            return "main";
+        }
 
-        return "main";
+        CashAction action = cashOperationForm.getAction();
+        Integer amount = cashOperationForm.getValue();
+
+        internalGatewayService.processCash(action, amount);
+        redirectAttributes.addFlashAttribute("info",
+                action == CashAction.GET ? "Снято %d руб".formatted(amount) : "Положено %d руб".formatted(amount));
+
+        return "redirect:/account";
     }
 
     /**
@@ -125,23 +144,47 @@ public class MainController {
      * 2. login - логин пользователя получателя
      */
     @PostMapping("/transfer")
-    public String transfer(
-            Model model,
-            @RequestParam("value") int value,
-            @RequestParam("login") String login
-    ) {
-        // TODO: Заменить на то, что описано в комментарии к методу
-        accountStub.transfer(model, value, login);
+    public String transfer(Model model,
+                           @Valid @ModelAttribute TransferOperationForm transferOperationForm,
+                           BindingResult bindingResult,
+                           RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            fillPageData(model, null);
+            initForms(model);
+            return "main";
+        }
 
-        return "main";
+        String login = transferOperationForm.getLogin();
+        Integer amount = transferOperationForm.getValue();
+
+        internalGatewayService.transferMoney(login, amount);
+        redirectAttributes.addFlashAttribute("info",
+                "Успешно переведено %d руб клиенту %s".formatted(amount, login));
+
+        return "redirect:/account";
     }
 
-    private void fillModel(AccountDto accountDto, Model model, @Nullable List<String> errors, @Nullable String info) {
-        model.addAttribute("name", accountDto.getName());
-        model.addAttribute("birthdate", accountDto.getBirthdate());
-        model.addAttribute("sum", accountDto.getBalance());
-        model.addAttribute("accounts", accountDto.getAccounts());
-        model.addAttribute("errors", errors);
-        model.addAttribute("info", info);
+    private void fillPageData(Model model, @Nullable AccountDto account) {
+        if (account == null) {
+            account = internalGatewayService.getAccount();
+        }
+        model.addAttribute("sum", account.getBalance());
+
+        model.addAttribute("accounts", internalGatewayService.getTransferRecipients());
+    }
+
+    private void initForms(Model model) {
+
+        if (!model.containsAttribute("accountForm")) {
+            model.addAttribute("accountForm", new AccountForm());
+        }
+
+        if (!model.containsAttribute("cashOperationForm")) {
+            model.addAttribute("cashOperationForm", new CashOperationForm());
+        }
+
+        if (!model.containsAttribute("transferOperationForm")) {
+            model.addAttribute("transferOperationForm", new TransferOperationForm());
+        }
     }
 }

@@ -42,4 +42,4 @@ spring:
             - id: accounts_service_route
               uri: lb://accounts
               predicates:
-                - Path=/api/v1/account/**
+                - Path=/api/v1/accounts/**

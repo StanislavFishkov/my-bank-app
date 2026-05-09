@@ -35,21 +35,29 @@
                         Обо мне
                     </div>
                     <div class="card-body gap-3">
-                        <form method="post" th:action="@{/account}">
+                        <form method="post" th:action="@{/account}" th:object="${accountForm}">
                             <div class="form-group">
                                 <h6>
                                     <label for="name">Фамилия Имя</label>
                                 </h6>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('name')}"
+                                     th:errors="*{name}">
+                                </div>
                                 <p>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="Иванов Иван" th:value="${name}" required>
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Иванов Иван" th:field="*{name}" required>
                                 </p>
                             </div>
                             <div class="form-group">
                                 <h6>
                                     <label for="birthdate">Дата рождения</label>
                                 </h6>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('birthdate')}"
+                                     th:errors="*{birthdate}">
+                                </div>
                                 <p>
-                                    <input type="date" class="form-control" name="birthdate" id="birthdate" th:value="${birthdate}" required>
+                                    <input type="date" class="form-control" name="birthdate" id="birthdate" th:field="*{birthdate}" required>
                                 </p>
                             </div>
                             <div class="form-group">
@@ -69,15 +77,19 @@
                         Операции с наличными
                     </div>
                     <div class="card-body gap-3">
-                        <form method="post" action="/cash">
+                        <form method="post" action="/cash" th:action="@{/cash}" th:object="${cashOperationForm}">
                             <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
 
                             <div class="form-group">
                                 <h6>
                                     <label for="cash_value">Сумма, руб.</label>
                                 </h6>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('value')}"
+                                     th:errors="*{value}">
+                                </div>
                                 <p>
-                                    <input type="number" class="form-control" id="cash_value" name="value" placeholder="100" required>
+                                    <input type="number" class="form-control" id="cash_value" name="value" th:field="*{value}" step="1" min="1" placeholder="100" required>
                                 </p>
                             </div>
                             <button type="submit" class="btn btn-secondary" name="action" value="PUT">Положить</button>
@@ -111,7 +123,7 @@
                                     <label for="transfer_value">Сумма, руб.</label>
                                 </h6>
                                 <p>
-                                    <input type="text" class="form-control" name="value" id="transfer_value" placeholder="100" required>
+                                    <input type="number" class="form-control" name="value" id="transfer_value" step="1" min="1" placeholder="100" required>
                                 </p>
                             </div>
                             <button type="submit" class="btn btn-secondary">Перевести</button>

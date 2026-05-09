@@ -5,12 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.mba.core.accounts.dto.AccountDto;
+import ru.yandex.practicum.mba.core.accounts.dto.AccountShortDto;
 import ru.yandex.practicum.mba.core.accounts.dto.UpdateRequestAccountDto;
 import ru.yandex.practicum.mba.core.accounts.error.exception.NotFoundException;
 import ru.yandex.practicum.mba.core.accounts.mapper.AccountMapper;
 import ru.yandex.practicum.mba.core.accounts.model.Account;
 import ru.yandex.practicum.mba.core.accounts.repository.AccountRepository;
 import ru.yandex.practicum.mba.core.accounts.security.UserContext;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -36,12 +39,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public List<AccountShortDto> getRecipients(String subject) {
+        log.debug("Get recipients for subject={}", subject);
+
+        checkAndGetAccountBySubject(subject);
+
+        List<AccountShortDto> accounts = accountRepository.getAccountsBySubjectNot(subject);
+        log.info("Recipient's accounts obtained for subject={}", subject);
+
+        return accounts;
+    }
+
+    @Override
     @Transactional
     public AccountDto updateAccountBySubject(String subject, UpdateRequestAccountDto updateRequest) {
         log.debug("Update account for subject={}, update request {}", subject,  updateRequest);
 
-        Account account = accountRepository.getAccountBySubject(subject)
-                    .orElseThrow(() -> new NotFoundException("Account doesn't exist for subject %s".formatted(subject)));
+        Account account = checkAndGetAccountBySubject(subject);
 
         accountMapper.update(account, updateRequest);
         account = accountRepository.save(account);
@@ -57,5 +71,10 @@ public class AccountServiceImpl implements AccountService {
                 account.getId(), account.getSubject(), userContext.login());
 
         return account;
+    }
+
+    private Account checkAndGetAccountBySubject(String subject) {
+        return accountRepository.getAccountBySubject(subject)
+                .orElseThrow(() -> new NotFoundException("Account doesn't exist for subject %s".formatted(subject)));
     }
 }
