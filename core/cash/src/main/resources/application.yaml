@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: cash
+  config:
+    import: "consul:"
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        hostname: host.docker.internal
+        prefer-ip-address: false
+        instance-id: "${spring.application.name}:${random.value}"
+        health-check-interval: 5s
+        health-check-critical-timeout: 15s
+      config:
+        enabled: true
+        prefixes: config
+        defaultContext: application
+        format: yaml
