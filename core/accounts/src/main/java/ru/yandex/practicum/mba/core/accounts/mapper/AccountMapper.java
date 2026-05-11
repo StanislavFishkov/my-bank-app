@@ -8,7 +8,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.yandex.practicum.mba.core.accounts.dto.AccountDto;
 import ru.yandex.practicum.mba.core.accounts.dto.UpdateRequestAccountDto;
 import ru.yandex.practicum.mba.core.accounts.model.Account;
-import ru.yandex.practicum.mba.core.accounts.security.UserContext;
+import ru.yandex.practicum.mba.core.security.user.UserContext;
 
 @Mapper
 public interface AccountMapper {

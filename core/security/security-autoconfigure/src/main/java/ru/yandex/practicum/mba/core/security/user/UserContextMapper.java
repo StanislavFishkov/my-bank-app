@@ -1,13 +1,11 @@
-package ru.yandex.practicum.mba.core.accounts.security;
+package ru.yandex.practicum.mba.core.security.user;
 
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
 public class UserContextMapper {
     public UserContext from(Jwt jwt) {
         String firstName = jwt.getClaimAsString("given_name");

@@ -3,7 +3,7 @@ package ru.yandex.practicum.mba.core.accounts.service;
 import ru.yandex.practicum.mba.core.accounts.dto.AccountDto;
 import ru.yandex.practicum.mba.core.accounts.dto.AccountShortDto;
 import ru.yandex.practicum.mba.core.accounts.dto.UpdateRequestAccountDto;
-import ru.yandex.practicum.mba.core.accounts.security.UserContext;
+import ru.yandex.practicum.mba.core.security.user.UserContext;
 
 import java.util.List;
 

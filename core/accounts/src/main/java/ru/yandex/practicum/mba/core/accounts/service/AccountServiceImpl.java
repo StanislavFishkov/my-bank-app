@@ -11,7 +11,7 @@ import ru.yandex.practicum.mba.core.accounts.error.exception.NotFoundException;
 import ru.yandex.practicum.mba.core.accounts.mapper.AccountMapper;
 import ru.yandex.practicum.mba.core.accounts.model.Account;
 import ru.yandex.practicum.mba.core.accounts.repository.AccountRepository;
-import ru.yandex.practicum.mba.core.accounts.security.UserContext;
+import ru.yandex.practicum.mba.core.security.user.UserContext;
 
 import java.util.List;
 

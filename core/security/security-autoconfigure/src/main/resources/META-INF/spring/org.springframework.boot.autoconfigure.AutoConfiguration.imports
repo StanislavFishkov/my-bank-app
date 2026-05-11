@@ -1,0 +1,2 @@
+ru.yandex.practicum.mba.core.security.config.MbaSecurityAutoConfiguration
+ru.yandex.practicum.mba.core.security.config.MbaUserContextAutoConfiguration
